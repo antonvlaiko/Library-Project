@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Add book | CRM Library" %}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card p-4">
+      <h3>{% trans "Add book" %}</h3>
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label>{% trans "ISBN" %}</label>
+          <input type="text" name="isbn" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label>{% trans "Title" %}</label>
+          <input type="text" name="title" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label>{% trans "Author" %}</label>
+          <input type="text" name="author" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label>{% trans "Genre" %}</label>
+          <input type="text" name="genre" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label>{% trans "Year of publishing" %}</label>
+          <input type="number" name="published_year" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label>{% trans "Copies available" %}</label>
+          <input type="number" name="copies_available" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label>{% trans "Visibility" %}</label>
+          <input type="checkbox" name="visible" checked>
+        </div>
+        <div class="mb-3">
+          <label>{% trans "Book image" %}</label>
+          <input type="file" name="image" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-success">{% trans "Add book" %}</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

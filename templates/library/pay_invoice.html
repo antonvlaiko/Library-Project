@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}Оплата рахунку | CRM Library{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card p-4">
+      <h3>{% trans "Pay invoice" %}</h3>
+      <p>{% trans "Book:" %} <strong>{{ invoice.book.title }}</strong></p>
+      <p>{% trans "Amount:" %} <strong>{{ invoice.amount }} €</strong></p>
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">{% trans "Mark as paid" %}</button>
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">{% trans "Cancel" %}</a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

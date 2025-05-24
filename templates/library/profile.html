@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Profile" %}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2>{% trans "Profile" %}</h2>
+
+<form method="post" novalidate>
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+
+  <div class="d-flex gap-3 mb-3 align-items-start">
+
+      <label class="form-label">
+        {% trans "Username" %}
+        {{ form.username.errors }}
+        {{ form.username }}
+      </label>
+
+
+
+      <label class="form-label">
+        {% trans "Email" %}
+        {{ form.email.errors }}
+        {{ form.email }}
+      </label>
+
+  </div>
+
+    <button type="submit" class="btn btn-primary">{% trans "Save changes" %}</button>
+  </form>
+
+
+<hr>
+{% if not request.user.is_staff %}
+  <h3>{% trans "Loans history" %}</h3>
+
+  {% if loan_history %}
+    <table class="table table-striped mt-3">
+      <thead>
+        <tr>
+          <th>{% trans "Book title" %}</th>
+          <th>{% trans "Loan date" %}</th>
+          <th>{% trans "Return date" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for loan in loan_history %}
+          <tr>
+            <td>{{ loan.book.title }}</td>
+            <td>{{ loan.borrowed_at|date:"d.m.Y" }}</td>
+            <td>
+              {% if loan.returned_at %}
+                {{ loan.returned_at|date:"d.m.Y" }}
+              {% else %}
+                <span class="text-danger">{% trans "Not returned" %}</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>{% trans "There is no loan history." %}</p>
+  {% endif %}
+{% endif %}
+</div>
+{% endblock %}
