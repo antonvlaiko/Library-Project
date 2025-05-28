@@ -538,13 +538,13 @@ msgid "Register"
 msgstr "Реєстрація"
 
 msgid "Pending loans"
-msgstr "Позики в очікуванні"
+msgstr "Позики в очікуванні підтвердження"
 
 msgid "Pending returns"
 msgstr "Повернення в очікуванні"
 
-msgid "There are no requested books"
-msgstr "Немає позичених книг"
+msgid "There are no requested books."
+msgstr "Немає позичених книг."
 
 msgid "You requested this book. Awaiting librarian approval."
 msgstr "Ви позичаєте цю книгу. Очікуйте на схвалення бібліотекаря."
@@ -552,11 +552,11 @@ msgstr "Ви позичаєте цю книгу. Очікуйте на схва�
 msgid "Request return"
 msgstr "Повернути книгу"
 
-msgid "Requested at"
-msgstr "Запит надіслано"
+msgid "Requested at:"
+msgstr "Запит надіслано:"
 
-msgid "Requested on"
-msgstr "Запит надіслано"
+msgid "Requested on:"
+msgstr "Запит надіслано:"
 
 msgid "Accept"
 msgstr "Підтвердити"
@@ -567,8 +567,8 @@ msgstr "Запити на позику"
 msgid "Loan approved successfully"
 msgstr "Позику успішно схвалено"
 
-msgid "There are no pending loans"
-msgstr "Немає позик в очікуванні"
+msgid "There are no pending loans."
+msgstr "Немає позик в очікуванні."
 
 msgid "Return request submitted. Please wait for librarian approval."
 msgstr "Запит на повернення книги надіслано. Будь ласка, зачекайте на схвалення бібліотекаря."
@@ -576,15 +576,8 @@ msgstr "Запит на повернення книги надіслано. Бу
 msgid "The return has been accepted."
 msgstr "Повернення прийнято."
 
-msgid ""
-msgstr ""
-
-msgid ""
-msgstr ""
-
-msgid ""
-msgstr ""
-
+#msgid ""
+#msgstr ""
 
 
 
