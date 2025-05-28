@@ -29,9 +29,9 @@
     {% for loan in loans %}
       <tr>
         <td>
-          <strong>{{ loan.book.title }}</strong><br>
+          <strong>{{ loan.book.title_localized }}</strong><br>
           {% trans "ISBN:" %} {{ loan.book.isbn }}<br>
-          {% trans "Author:" %} {{ loan.book.author }}<br>
+          {% trans "Author:" %} {{ loan.book.title_localized }}<br>
           {% trans "Genre:" %} {{ loan.book.genre }}<br>
           {% trans "Year of publishing:" %} {{ loan.book.published_year }}
         </td>

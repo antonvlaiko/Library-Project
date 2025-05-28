@@ -429,7 +429,7 @@ msgstr "Нові надходження"
 #: .\templates\library\home.html:131 .\templates\library\home.html:157
 #: .\templates\library\home.html:183
 msgid "author:"
-msgstr "автор:"
+msgstr "Автор:"
 
 #: .\templates\library\home.html:133 .\templates\library\home.html:158
 #: .\templates\library\home.html:184
@@ -492,8 +492,8 @@ msgstr "Немає історії позик."
 msgid "Toggle navigation"
 msgstr "Навігація"
 
-msgid "Welcome,"
-msgstr "Вітання,"
+msgid "Welcome"
+msgstr "Вітання"
 
 msgid "Logout"
 msgstr "Вийти"
@@ -506,6 +506,38 @@ msgstr "До"
 
 msgid "Add Book"
 msgstr "Додати книгу"
+
+msgid "Similar to your read books"
+msgstr "Схоже на прочитані книги"
+
+msgid "Author (Ukrainian)"
+msgstr "Автор (Українською)"
+
+msgid "Author (English)"
+msgstr "Автор (Англійською)"
+
+msgid "Title (Ukrainian)"
+msgstr "Назва (Українською)"
+
+msgid "Title (English)"
+msgstr "Назва (Англійською)"
+
+msgid "Book is already rated"
+msgstr "Книгу вже оцінено"
+
+msgid "Rate book"
+msgstr "Оцінити книгу"
+
+msgid "Thanks for rating the book!"
+msgstr "Дякуємо за оцінювання книги!"
+
+msgid "Login"
+msgstr "Логін"
+
+msgid "Register"
+msgstr "Реєстрація"
+
+
 
 
 

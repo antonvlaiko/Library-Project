@@ -15,7 +15,7 @@
               <li class="list-group-item d-flex justify-content-between align-items-center">
                 <div>
                     <a href="{% url 'book_detail' loan.book.pk %}" class="text-body text-decoration-none fw-bold">
-            {{ loan.book.title }}</a> <br>
+            {{ loan.book.title_localized }}</a> <br>
                   {% trans "Return until:" %} {{ loan.due_date|date:"d.m.Y" }}
                 </div>
                 <a href="{% url 'return_book' loan.id %}" class="btn btn-sm btn-outline-success">{% trans "Return" %}</a>
@@ -45,7 +45,7 @@
             {% for invoice in my_invoices %}
               <li class="list-group-item d-flex justify-content-between align-items-center">
                 <div>
-                  {{ invoice.book.title }}<br>
+                  {{ invoice.book.title_localized }}<br>
                   {% trans "Amount:" %} {{ invoice.amount }} €<br>
                   {% trans "Pay until:" %} {{ invoice.due_date|date:"d.m.Y" }}
                 </div>

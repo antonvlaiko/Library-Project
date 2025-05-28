@@ -3,6 +3,7 @@
 {% block title %}Головна | CRM Library{% endblock %}
 
 {% block content %}
+{% get_current_language as lang_code %}
 <div class="row mb-4">
   <div class="col-12">
     <form method="get" class="mb-4">
@@ -117,7 +118,7 @@
             <img
               src="{{ book.image.url }}"
               class="card-img-top"
-              alt="Обкладинка книги {{ book.title }}"
+              alt="Обкладинка книги {{ book.title_en }}"
               style="height: 300px; object-fit: contain;"
             >
           {% else %}
@@ -129,8 +130,8 @@
             >
           {% endif %}
           <div class="card-body d-flex flex-column">
-            <h6 class="card-title fw-semibold">{{ book.title }}</h6>
-            <p class="card-text text-muted mb-3">{% trans "author:" %} {{ book.author }}</p>
+            <h6 class="card-title fw-semibold">{{ book.title_localized }}</h6>
+            <p class="card-text text-muted mb-3">{% trans "author:" %} {{ book.author_localized }}</p>
             <a href="{% url 'book_detail' book.pk %}" class="btn btn-outline-primary btn-sm mt-auto">
               {% trans "Details" %}
             </a>
@@ -154,7 +155,7 @@
             <img
               src="{{ book.image.url }}"
               class="card-img-top"
-              alt="Обкладинка книги {{ book.title }}"
+              alt="Обкладинка книги {{ book.title_en }}"
               style="height: 300px; object-fit: contain;"
             >
           {% else %}
@@ -166,8 +167,8 @@
             >
           {% endif %}
           <div class="card-body d-flex flex-column">
-            <h6 class="card-title fw-semibold">{{ book.title }}</h6>
-            <p class="card-text text-muted mb-3">{% trans "author:" %} {{ book.author }}</p>
+            <h6 class="card-title fw-semibold">{{ book.title_localized }}</h6>
+            <p class="card-text text-muted mb-3">{% trans "author:" %} {{ book.author_localized }}</p>
             <a href="{% url 'book_detail' book.pk %}" class="btn btn-outline-primary btn-sm mt-auto">
               {% trans "Details" %}
             </a>
@@ -187,13 +188,13 @@
       <div class="col-md-3 col-6 mb-4">
         <div class="card h-100 shadow-sm">
           {% if book.image %}
-            <img src="{{ book.image.url }}" class="card-img-top" alt="Обкладинка книги {{ book.title }}" style="height: 300px; object-fit: contain;">
+            <img src="{{ book.image.url }}" class="card-img-top" alt="Обкладинка книги {{ book.title_en }}" style="height: 300px; object-fit: contain;">
           {% else %}
             <img src="https://placehold.co/200x300?text=Немає+зображення" class="card-img-top" alt="Немає зображення" style="height: 300px; object-fit: contain;">
           {% endif %}
           <div class="card-body d-flex flex-column">
-            <h6 class="card-title fw-semibold">{{ book.title }}</h6>
-            <p class="card-text text-muted mb-3">{% trans "author:" %} {{ book.author }}</p>
+            <h6 class="card-title fw-semibold">{{ book.title_localized }}</h6>
+            <p class="card-text text-muted mb-3">{% trans "author:" %} {{ book.author_localized }}</p>
             <a href="{% url 'book_detail' book.pk %}" class="btn btn-outline-primary btn-sm mt-auto">{% trans "Details" %}</a>
           </div>
         </div>
@@ -213,13 +214,13 @@
       <div class="col-md-3 col-6 mb-4">
         <div class="card h-100 shadow-sm">
           {% if book.image %}
-            <img src="{{ book.image.url }}" class="card-img-top" alt="Обкладинка книги {{ book.title }}" style="height: 300px; object-fit: contain;">
+            <img src="{{ book.image.url }}" class="card-img-top" alt="Обкладинка книги {{ book.title_en }}" style="height: 300px; object-fit: contain;">
           {% else %}
             <img src="https://placehold.co/200x300?text=Немає+зображення" class="card-img-top" alt="Немає зображення" style="height: 300px; object-fit: contain;">
           {% endif %}
           <div class="card-body d-flex flex-column">
-            <h6 class="card-title fw-semibold">{{ book.title }}</h6>
-            <p class="card-text text-muted mb-3">{% trans "author:" %} {{ book.author }}</p>
+            <h6 class="card-title fw-semibold">{{ book.title_localized }}</h6>
+            <p class="card-text text-muted mb-3">{% trans "author:" %} {{ book.author_localized }}</p>
             <a href="{% url 'book_detail' book.pk %}" class="btn btn-outline-primary btn-sm mt-auto">{% trans "Details" %}</a>
           </div>
         </div>

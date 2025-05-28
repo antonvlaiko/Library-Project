@@ -12,8 +12,8 @@
         </div>
         <div class="col-md-8">
           <div class="card-body">
-            <h3 class="card-title">{{ book.title }}</h3>
-            <p class="card-text"><strong>{% trans "Author:" %}</strong> {{ book.author }}</p>
+            <h3 class="card-title">{{ book.title_localized }}</h3>
+            <p class="card-text"><strong>{% trans "Author:" %}</strong> {{ book.author_localized }}</p>
             <p class="card-text"><strong>{% trans "Genre:" %}</strong> {{ book.genre }}</p>
             <p class="card-text"><strong>ISBN:</strong> {{ book.isbn }}</p>
             <p class="card-text"><strong>{% trans "Year of publishing:" %}</strong> {{ book.published_year }}</p>
@@ -39,9 +39,9 @@
     {% endfor %}
   </div>
   {% if user_rating and user_rating.rating == i %}
-    <p>Book is already rated</p>
+    <p>{% trans "Book is already rated" %}</p>
   {% endif %}
-   <button type="submit" class="btn btn-primary btn-sm mt-2">Rate book</button>
+   <button type="submit" class="btn btn-primary btn-sm mt-2">{% trans "Rate book" %}</button>
 </form>
 
   {% endif %}

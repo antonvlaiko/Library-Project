@@ -1,11 +1,14 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import get_language
 
 class Book(models.Model):
     isbn = models.CharField(_("ISBN"), max_length=50, unique=True)
-    title = models.CharField(_("Title"), max_length=200)
-    author = models.CharField(_("Author"), max_length=100)
+    title_uk = models.CharField(_("Title (Ukrainian)"), max_length=200, blank=True, null=True)
+    title_en = models.CharField(_("Title (English)"), max_length=200, blank=True, null=True)
+    author_uk = models.CharField(_("Author (Ukrainian)"), max_length=100, blank=True, null=True)
+    author_en = models.CharField(_("Author (English)"), max_length=100, blank=True, null=True)
     genre = models.CharField(_("Genre"), max_length=100)
     published_year = models.PositiveIntegerField(_("Published Year"))
     copies_available = models.PositiveIntegerField(_("Copies Available"))
@@ -13,12 +16,28 @@ class Book(models.Model):
     image = models.ImageField(_("Book Cover"), upload_to='book_images/', blank=True, null=True)
     created_at = models.DateTimeField(_("Created At"), auto_now_add=True)
 
+    @property
+    def title_localized(self):
+        lang = get_language()
+        if lang == 'en' and self.title_en:
+            return self.title_en
+        return self.title_uk
+
+    @property
+    def author_localized(self):
+        lang = get_language()
+        if lang == 'en' and self.author_en:
+            return self.author_en
+        return self.author_uk
+
     class Meta:
         verbose_name = _("Book")
         verbose_name_plural = _("Books")
 
     def __str__(self):
-        return self.title
+        lang = get_language()
+        title = getattr(self, f"title_{lang}", None)
+        return str(title or self.title_uk or self.title_en or "Untitled")
 
 class Loan(models.Model):
     user = models.ForeignKey(User, verbose_name=_("User"), on_delete=models.CASCADE)
@@ -33,7 +52,7 @@ class Loan(models.Model):
         verbose_name_plural = _("Loans")
 
     def __str__(self):
-        return f"{self.user.username} - {self.book.title}"
+        return f"{self.user.username} - {self.book.title_en}"
 
 class Invoice(models.Model):
     user = models.ForeignKey(User, verbose_name=_("User"), on_delete=models.CASCADE)

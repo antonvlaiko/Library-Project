@@ -41,7 +41,7 @@
                   <h6 class="card-title fw-bold">
                     {% trans "User:" %} <span class="text-primary">{{ invoice.user.username }}</span>
                   </h6>
-                  <p class="card-text mb-1"><strong>{% trans "Title:" %}</strong> {{ invoice.book.title }}</p>
+                  <p class="card-text mb-1"><strong>{% trans "Title:" %}</strong> {{ invoice.book.title_localized }}</p>
                   <p class="card-text mb-1"><strong>{% trans "Amount:" %}</strong> {{ invoice.amount }} €</p>
                   <p class="card-text"><strong>{% trans "Late from:" %}</strong> {{ invoice.due_date|date:"d.m.Y" }}</p>
                 </div>

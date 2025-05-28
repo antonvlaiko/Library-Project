@@ -10,6 +10,7 @@ from django.contrib import messages
 from datetime import timedelta
 from .forms import UserUpdateForm
 from django.utils.translation import gettext as _
+from django.utils.translation import get_language
 
 def home(request):
     # search_query = request.GET.get('q', '')
@@ -33,6 +34,8 @@ def home(request):
     #     'search_query': search_query,  # Опціонально, якщо хочеш заздалегідь заповнити поле у шаблоні
     # }
     # return render(request, 'library/home.html', context)
+    lang_code = get_language() or 'en'
+
     search_query = request.GET.get('q', '').strip()
     selected_genres = request.GET.getlist('genre')
     year_min = request.GET.get('year_min')
@@ -49,8 +52,10 @@ def home(request):
     # Apply search filter
     if search_query:
         books = books.filter(
-            Q(title__icontains=search_query) |
-            Q(author__icontains=search_query) |
+            Q(title_en__icontains=search_query) |
+            Q(title_uk__icontains=search_query) |
+            Q(author_en__icontains=search_query) |
+            Q(author_uk__icontains=search_query) |
             Q(genre__icontains=search_query) |
             Q(isbn__icontains=search_query) |
             Q(published_year__icontains=search_query)
@@ -92,12 +97,12 @@ def home(request):
 
         for loan in returned_loans:
             book = loan.book
-            similar_authors.add(book.author)
+            similar_authors.add(book.author_en)
             similar_genres.add(book.genre)
             books_read_ids.add(book.id)
 
         similar_books = Book.objects.filter(
-            Q(author__in=similar_authors) | Q(genre__in=similar_genres)
+            Q(author_en__in=similar_authors) | Q(genre__in=similar_genres)
         ).exclude(id__in=books_read_ids).distinct()[:8]
     # Show newest only if no filter is applied
     show_newest = not search_query and not selected_genres
@@ -113,6 +118,7 @@ def home(request):
         'selected_genres': selected_genres,
         'show_newest': show_newest,
         'similar_books': similar_books,
+        'lang_code': lang_code,
     }
     return render(request, 'library/home.html', context)
 
@@ -179,7 +185,7 @@ def rate_book(request, pk):
                 book=book,
                 defaults={'rating': rating_value}
             )
-            messages.success(request, f"Thanks for rating {book.title}!")
+            messages.success(request, _("Thanks for rating the book!"))
         else:
             messages.error(request, "Invalid rating value.")
 
@@ -206,8 +212,10 @@ def admin_dashboard(request):
 def add_book(request):
     if request.method == 'POST':
         isbn = request.POST['isbn']
-        title = request.POST['title']
-        author = request.POST['author']
+        title_uk = request.POST['title_uk']
+        title_en = request.POST['title_en']
+        author_uk = request.POST['author_uk']
+        author_en = request.POST['author_en']
         genre = request.POST['genre']
         published_year = request.POST['published_year']
         copies_available = request.POST['copies_available']
@@ -215,7 +223,7 @@ def add_book(request):
         visible = request.POST.get('visible') == 'on'
         image = request.FILES.get('image')
         Book.objects.create(
-            isbn=isbn, title=title, author=author, genre=genre,
+            isbn=isbn, title_en=title_en, title_uk=title_uk, author_en=author_en, author_uk=author_uk, genre=genre,
             published_year=published_year, copies_available=copies_available,
             visible=visible, image=image
         )
@@ -269,8 +277,10 @@ def book_database(request):
 def edit_book(request, book_id):
     book = get_object_or_404(Book, id=book_id)
     if request.method == 'POST':
-        book.title = request.POST.get('title', book.title)
-        book.author = request.POST.get('author', book.author)
+        book.title_uk = request.POST.get('title_uk', book.title_uk)
+        book.title_en = request.POST.get('title_en', book.title_en)
+        book.author_uk = request.POST.get('author_uk', book.author_uk)
+        book.author_en = request.POST.get('author_en', book.author_en)
         book.genre = request.POST.get('genre', book.genre)
         book.isbn = request.POST.get('isbn', book.isbn)
         book.published_year = request.POST.get('published_year', book.published_year)
@@ -309,7 +319,7 @@ def all_loans(request):
         ws.title = "Loans"
 
         headers = [
-            _("Book"), _("ISBN"), _("Author"), _("Genre"), _("Year of publishing"),
+            _("Book"), _("ISBN"), _("Author (English)"), _("Genre"), _("Year of publishing"),
             _("User"), _("Lent"), _("Until"), _("Returned"),
             _("Late by (days)"), _("Fee (€)")
         ]
@@ -317,9 +327,9 @@ def all_loans(request):
 
         for loan in loans:
             row = [
-                loan.book.title,
+                loan.book.title_en,
                 loan.book.isbn,
-                loan.book.author,
+                loan.book.author_en,
                 loan.book.genre,
                 loan.book.published_year,
                 loan.user.username,

@@ -54,7 +54,7 @@
       <tbody>
         {% for loan in loan_history %}
           <tr>
-            <td>{{ loan.book.title }}</td>
+            <td>{{ loan.book.title_localized }}</td>
             <td>{{ loan.borrowed_at|date:"d.m.Y" }}</td>
             <td>
               {% if loan.returned_at %}
