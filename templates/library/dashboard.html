@@ -18,12 +18,57 @@
             {{ loan.book.title_localized }}</a> <br>
                   {% trans "Return until:" %} {{ loan.due_date|date:"d.m.Y" }}
                 </div>
-                <a href="{% url 'return_book' loan.id %}" class="btn btn-sm btn-outline-success">{% trans "Return" %}</a>
+                <form method="post" action="{% url 'return_book' loan.id %}">
+  {% csrf_token %}
+  <button type="submit" class="btn btn-sm btn-outline-success">{% trans "Request Return" %}</button>
+</form>
+
+
               </li>
             {% endfor %}
           </ul>
         {% else %}
           <p>{% trans "There is no lent books." %}</p>
+        {% endif %}
+      </div>
+    </div>
+    <div class="card h-100 mt-4">
+      <div class="card-body">
+        <h5 class="card-title">{% trans "Pending loans" %}</h5>
+        {% if pending_loans %}
+          <ul class="list-group list-group-flush">
+            {% for loan in pending_loans %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <a href="{% url 'book_detail' loan.book.pk %}" class="text-body text-decoration-none fw-bold">
+            {{ loan.book.title_localized }}</a> <br>
+                  {% trans "Requested at:" %} {{ loan.requested_at|date:"d.m.Y" }}
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p>{% trans "There are no requested books." %}</p>
+        {% endif %}
+      </div>
+    </div>
+      <div class="card h-100 mt-4">
+      <div class="card-body">
+        <h5 class="card-title">{% trans "Pending returns" %}</h5>
+        {% if pending_returns %}
+          <ul class="list-group list-group-flush">
+            {% for return in pending_returns %}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <a href="{% url 'book_detail' return.book.pk %}" class="text-body text-decoration-none fw-bold">
+            {{ return.book.title_localized }}</a> <br>
+
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p>{% trans "There are no requested to return books." %}</p>
         {% endif %}
       </div>
     </div>

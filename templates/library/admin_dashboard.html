@@ -1,11 +1,8 @@
 {% extends 'base.html' %}
 {% load i18n %}
-
 {% block title %}{% trans "Admin Dashboard | CRM Library" %}{% endblock %}
-
 {% block content %}
 <h2 class="mb-4">{% trans "Admin Dashboard" %}</h2>
-
 <div class="row mb-4">
   <!-- Book Database Card -->
   <div class="col-md-4 mb-3">
@@ -15,24 +12,10 @@
         <a href="{% url 'book_database' %}" class="btn btn-sm btn-success mb-2">{% trans "To database" %}</a>
       </div>
     </div>
-  </div>
 
-  <!-- Borrowed Books Card -->
-  <div class="col-md-4 mb-3">
-    <div class="card h-100">
-      <div class="card-body">
-        <h5 class="card-title">{% trans "Lent books" %}</h5>
-        <a href="{% url 'all_loans' %}" class="btn btn-sm btn-success mb-2">{% trans "To the lent books list" %}</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- Open Invoices Card -->
-  <div class="col-md-4 mb-3">
     <div class="card h-100">
       <div class="card-body">
         <h5 class="card-title">{% trans "Unpaid invoices" %}</h5>
-
         <div class="row row-cols-1 g-3">
           {% for invoice in open_invoices %}
             <div class="col">
@@ -55,9 +38,80 @@
             </div>
           {% endfor %}
         </div>
+      </div>
+    </div>
+  </div>
 
+  <!-- Borrowed Books Card -->
+  <div class="col-md-4 mb-3">
+    <div class="card h-100">
+      <div class="card-body">
+        <h5 class="card-title">{% trans "Lent books" %}</h5>
+        <a href="{% url 'all_loans' %}" class="btn btn-sm btn-success mb-2">{% trans "To the lent books list" %}</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4 mb-3">
+    <div class="card h-100">
+      <div class="card-body">
+        <h5 class="card-title">{% trans "Loan requests" %}</h5>
+        <div class="row row-cols-1 g-3">
+          {% for loan_request in loan_requests %}
+            <div class="col">
+              <div class="card shadow-sm h-100">
+                <div class="card-body">
+                  <h6 class="card-title fw-bold">
+                    {% trans "User:" %} <span class="text-primary">{{ loan_request.user.username }}</span>
+                  </h6>
+                  <p class="card-text mb-1"><strong>{% trans "Title:" %}</strong> {{ loan_request.book.title_localized }}</p>
+                  <p class="card-text mb-1"><strong>{% trans "Requested on:" %}</strong> {{ loan_request.requested_at }}</p>
+                  <form method="post" action="{% url 'accept_loan' loan_request.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success">Accept</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+              <div class="alert alert-info text-center">
+                {% trans "There are no pending loans." %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div class="card h-100 mt-4">
+      <div class="card-body">
+        <h5 class="card-title">{% trans "Pending returns" %}</h5>
+        {% if return_requests %}
+          <ul class="list-group list-group-flush">
+            {% for return in return_requests %}
+              <li class="list-group-item d-flex justify-content-between">
+                <div>
+                  <h6 class="card-title fw-bold">
+                    {% trans "User:" %} <span class="text-primary">{{ return.user.username }}</span>
+                  </h6>
+                  <p class="card-text mb-1"><strong>{% trans "Title:" %}</strong> {{ return.book.title_localized }}</p>
+                  <p class="card-text mb-1"><strong>{% trans "Requested on:" %}</strong> {{ return.requested_at }}</p>
+                </div>
+                <form method="post" action="{% url 'accept_return' return.id %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-success">Accept</button>
+                </form>
+              </li>
+            {% endfor %}
+          </ul>
+        {% else %}
+        <p>{% trans "There are no requested to return books." %}</p>
+        {% endif %}
       </div>
     </div>
   </div>
 </div>
+
+  <!-- Open Invoices Card -->
+
 {% endblock %}

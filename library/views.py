@@ -125,11 +125,16 @@ def home(request):
 
 @login_required
 def dashboard(request):
-    my_loans = Loan.objects.filter(user=request.user, is_returned=False)
+    my_loans = Loan.objects.filter(user=request.user, is_returned=False, is_accepted=True)
+    pending_loans = Loan.objects.filter(user=request.user, is_requested=True, is_accepted=False)
+    pending_returns = Loan.objects.filter(user=request.user, is_requested_to_return=True, is_returned=False)
     my_invoices = Invoice.objects.filter(user=request.user, paid=False)
+
     return render(request, 'library/dashboard.html', {
         'my_loans': my_loans,
         'my_invoices': my_invoices,
+        'pending_loans': pending_loans,
+        'pending_returns': pending_returns,
     })
 
 @login_required
@@ -144,18 +149,6 @@ def book_detail(request, pk):
     # Check if user has already rated
     user_rating = BookRating.objects.filter(user=request.user, book=book).first()
 
-
-
-    if request.method == 'POST':
-        if book.copies_available > 0:
-            due = timezone.now() + timedelta(days=14)
-            Loan.objects.create(user=request.user, book=book, due_date=due)
-            book.copies_available -= 1
-            book.save()
-            messages.success(request, _('The book was lent successfuly!'))
-            return redirect('dashboard')
-        else:
-            messages.error(request, _('No copies available'))
     context = {
         'book': book,
         'average_rating': round(average_rating, 1) if average_rating else None,
@@ -165,6 +158,31 @@ def book_detail(request, pk):
     }
     return render(request, 'library/book_detail.html', context)
 
+@login_required
+def request_book(request, pk):
+    book = get_object_or_404(Book, pk=pk)
+
+    if request.method == 'POST':
+        if book.copies_available > 0:
+            # Check if request already exists
+            existing = Loan.objects.filter(user=request.user, book=book, is_requested=True, is_accepted=False)
+            if existing.exists():
+                messages.warning(request, _('You have already requested this book.'))
+                return redirect('dashboard')
+
+            # Create the request (do NOT reduce book copies yet)
+            Loan.objects.create(
+                user=request.user,
+                book=book,
+                is_requested=True,
+                is_accepted=False
+            )
+            messages.info(request, _('You requested this book. Awaiting librarian approval.'))
+        else:
+            messages.error(request, _('No copies available'))
+        return redirect('dashboard')
+
+    return redirect('book_detail', book_id=book.id)
 
 @login_required
 def rate_book(request, pk):
@@ -201,11 +219,59 @@ def admin_dashboard(request):
     all_books = Book.objects.all()
     all_loans = Loan.objects.filter(is_returned=False)
     open_invoices = Invoice.objects.filter(paid=False)
+    loan_requests = Loan.objects.filter(is_requested=True, is_accepted=False)
+    return_requests = Loan.objects.filter(is_requested_to_return=True, is_returned=False)
     return render(request, 'library/admin_dashboard.html', {
         'all_books': all_books,
         'all_loans': all_loans,
         'open_invoices': open_invoices,
+        'loan_requests': loan_requests,
+        'return_requests': return_requests,
     })
+
+@login_required
+@user_passes_test(is_admin)
+def accept_loan(request, loan_id):
+    if request.method == 'POST':
+        loan = get_object_or_404(Loan, id=loan_id)
+
+        if loan.book.copies_available > 0:
+            loan.is_accepted = True
+            loan.due_date = timezone.now() + timedelta(days=14)
+            loan.save()
+            loan.book.copies_available -= 1
+            loan.book.save()
+            messages.success(request, _('Loan approved successfully.'))
+        else:
+            messages.error(request, _('No copies available.'))
+
+    return redirect('admin_dashboard')
+
+@login_required
+@user_passes_test(is_admin)
+def accept_return(request, loan_id):
+    loan = get_object_or_404(Loan, id=loan_id, is_requested_to_return=True, is_returned=False)
+
+    loan.is_returned = True
+    loan.book.copies_available += 1
+    loan.book.save()
+    loan.save()
+
+    # Calculate overdue and invoice
+    free_period = timedelta(days=14)
+    borrowed_for = loan.returned_at - loan.borrowed_at
+    if borrowed_for > free_period:
+        days_overdue = (borrowed_for - free_period).days
+        amount = 1.5 * days_overdue
+        Invoice.objects.create(
+            user=loan.user,
+            book=loan.book,
+            amount=amount,
+            due_date=timezone.now()
+        )
+
+    messages.success(request, _('The return has been accepted.'))
+    return redirect('admin_dashboard')
 
 @login_required
 @user_passes_test(is_admin)
@@ -234,26 +300,13 @@ def add_book(request):
 @login_required
 def return_book(request, loan_id):
     loan = get_object_or_404(Loan, id=loan_id, user=request.user, is_returned=False)
-    loan.is_returned = True
-    loan.returned_at = timezone.now()
-    loan.book.copies_available += 1
-    loan.book.save()
-    loan.save()
 
-    # Обчислити 14-денний строк
-    free_period = timedelta(days=14)
-    borrowed_for = loan.returned_at - loan.borrowed_at
-    if borrowed_for > free_period:
-        days_overdue = (borrowed_for - free_period).days
-        amount = 1.5 * days_overdue
-        Invoice.objects.create(
-            user=request.user,
-            book=loan.book,
-            amount=amount,
-            due_date=timezone.now()
-        )
-    messages.success(request, _('The book was returned!'))
-    return redirect('dashboard')
+    if request.method == 'POST':
+        loan.is_requested_to_return = True
+        loan.returned_at = timezone.now()
+        loan.save()
+        messages.success(request, _('Return request submitted. Please wait for librarian approval.'))
+        return redirect('dashboard')
 
 @login_required
 def pay_invoice(request, invoice_id):

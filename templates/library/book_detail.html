@@ -50,9 +50,12 @@
              <div class="mt-3">
               <a href="{% url 'home' %}" class="btn btn-secondary">{% trans "Back to homepage" %}</a>
               {% if user.is_authenticated and book.copies_available > 0 %}
-                <form method="post" class="d-inline">{% csrf_token %}
-                  <button type="submit" class="btn btn-primary">{% trans "Lend book" %}</button>
-                </form>
+                 <form method="post" action="{% url 'request_book' book.id %}">
+  {% csrf_token %}
+
+   <button type="submit" class="btn btn-primary btn-sm mt-2">{% trans "Lend book" %}</button>
+</form>
+
               {% endif %}
             </div>
           </div>

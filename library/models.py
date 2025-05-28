@@ -43,7 +43,11 @@ class Loan(models.Model):
     user = models.ForeignKey(User, verbose_name=_("User"), on_delete=models.CASCADE)
     book = models.ForeignKey(Book, verbose_name=_("Book"), on_delete=models.CASCADE)
     borrowed_at = models.DateTimeField(_("Borrowed At"), auto_now_add=True)
-    due_date = models.DateTimeField(_("Due Date"))
+    due_date = models.DateTimeField(_("Due Date"), auto_now_add=True)
+    is_requested = models.BooleanField(default=False)
+    is_accepted = models.BooleanField(default=False)
+    is_requested_to_return = models.BooleanField(default=False)
+    requested_at = models.DateTimeField(_("Requested At"), auto_now_add=True)
     returned_at = models.DateTimeField(_("Returned At"), null=True, blank=True)
     is_returned = models.BooleanField(_("Returned"), default=False)
 
