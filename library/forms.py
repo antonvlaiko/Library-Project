@@ -3,6 +3,18 @@ from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 
 class UserUpdateForm(forms.ModelForm):
+    first_name = forms.CharField(
+        label=_("First name"),
+        max_length=30,
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    last_name = forms.CharField(
+        label=_("Last name"),
+        max_length=150,
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
     username = forms.CharField(
         label=_("Username"),
         max_length=150,
@@ -17,11 +29,7 @@ class UserUpdateForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['username', 'email']
-        labels = {
-            'username': _("Username"),
-            'email': _("Email"),
-        }
+        fields = ['username', 'email', 'first_name', 'last_name']
 
     def clean_username(self):
         username = self.cleaned_data['username']

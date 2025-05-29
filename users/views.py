@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
-from .forms import RegisterForm
+# from .forms import RegisterForm
 from django.contrib import messages
 from .forms import CustomUserCreationForm
+from library.models import UserProfile
 
 # def register_view(request):
 #     if request.method == 'POST':
@@ -19,6 +20,7 @@ def register_view(request):
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
+
             login(request, user)
             return redirect("dashboard")  # Redirect where appropriate
     else:

@@ -18,19 +18,35 @@
 
   <div class="d-flex gap-3 mb-3 align-items-start">
 
-      <label class="form-label">
-        {% trans "Username" %}
-        {{ form.username.errors }}
-        {{ form.username }}
-      </label>
+    <label class="form-label">
+      {% trans "Username" %}
+      {{ form.username.errors }}
+      {{ form.username }}
+    </label>
 
+    <label class="form-label">
+      {% trans "Email" %}
+      {{ form.email.errors }}
+      {{ form.email }}
+    </label>
 
+    <label class="form-label">
+      {% trans "Full name" %}
+      {{ form.name.errors }}
+      {{ form.name }}
+    </label>
 
-      <label class="form-label">
-        {% trans "Email" %}
-        {{ form.email.errors }}
-        {{ form.email }}
-      </label>
+    <label class="form-label">
+      {% trans "Phone" %}
+      {{ form.phone.errors }}
+      {{ form.phone }}
+    </label>
+
+    <label class="form-label">
+      {% trans "Address" %}
+<!--      {{ form.address.errors }}-->
+      {{ form.address }}
+    </label>
 
   </div>
 
