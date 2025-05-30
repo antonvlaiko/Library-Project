@@ -8,7 +8,7 @@ from django.utils import timezone
 from django.db.models import Count, Q
 from django.contrib import messages
 from datetime import timedelta
-from .forms import UserUpdateForm
+from .forms import UserUpdateForm, UserProfileUpdateForm
 from django.utils.translation import gettext as _
 from django.utils.translation import get_language
 
@@ -321,8 +321,20 @@ def pay_invoice(request, invoice_id):
 @login_required
 @user_passes_test(is_admin)
 def book_database(request):
+    query = request.GET.get('q', '')  # get search query from ?q=
+
     books = Book.objects.all()
-    return render(request, 'library/book_database.html', {'books': books})
+    if query:
+        books = books.filter(
+            Q(title_en__icontains=query) |
+            Q(title_uk__icontains=query) |
+            Q(author_en__icontains=query) |
+            Q(author_uk__icontains=query) |
+            Q(genre__icontains=query) |
+            Q(isbn__icontains=query) |
+            Q(published_year__icontains=query)
+        )
+    return render(request, 'library/book_database.html', {'books': books, 'query': query})
 
 
 @login_required
@@ -351,6 +363,11 @@ def all_loans(request):
     # Всі позики, відсортовані за статусом повернення, останні спочатку
     loans = Loan.objects.select_related('book', 'user').order_by('-borrowed_at')
     today = timezone.now().date()
+    query = request.GET.get('q', '')  # get search query from ?q=
+    if query:
+        loans = loans.filter(
+            Q(user__last_name__icontains=query)
+        )
 
     # Обчислення додаткових полів (must come before export)
     for loan in loans:
@@ -402,23 +419,27 @@ def all_loans(request):
         return response
 
     # Normal render
-    return render(request, 'library/all_loans.html', {'loans': loans})
+    return render(request, 'library/all_loans.html', {'loans': loans, 'query': query})
 
 
 @login_required
 def profile(request):
     if request.method == 'POST':
-        form = UserUpdateForm(request.POST, instance=request.user)
-        if form.is_valid():
-            form.save()
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+        profile_form = UserProfileUpdateForm(request.POST, instance=request.user.profile)
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
             messages.success(request, _('Profile was updated!'))
             return redirect('profile')
     else:
-        form = UserUpdateForm(instance=request.user)
+        user_form = UserUpdateForm(instance=request.user)
+        profile_form = UserProfileUpdateForm(instance=request.user.profile)
 
     loan_history = Loan.objects.filter(user=request.user).select_related('book').order_by('-returned_at')
     context = {
-        'form': form,
+        'user_form': user_form,
+        'profile_form': profile_form,
         'loan_history': loan_history,
     }
     return render(request, 'library/profile.html', context)

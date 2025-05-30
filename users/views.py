@@ -20,9 +20,8 @@ def register_view(request):
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-
             login(request, user)
-            return redirect("dashboard")  # Redirect where appropriate
+            return redirect('dashboard')  # or your homepage
     else:
         form = CustomUserCreationForm()
     return render(request, "users/register.html", {"form": form})
@@ -34,11 +33,10 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            # Prüfe, ob der User ein Admin ist
             if user.is_staff or user.is_superuser:
-                return redirect('admin_dashboard')  # Name deiner Admin-Dashboard-URL
+                return redirect('admin_dashboard')
             else:
-                return redirect('dashboard')        # Name deines normalen Dashboards
+                return redirect('dashboard')
         else:
             messages.error(request, 'Недійсні дані для входу')
     return render(request, 'users/login.html')

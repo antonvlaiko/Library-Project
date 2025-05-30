@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
+from library.models import UserProfile
 from django.utils.translation import gettext_lazy as _
 
 class UserUpdateForm(forms.ModelForm):
@@ -44,3 +45,19 @@ class UserUpdateForm(forms.ModelForm):
         if qs.exists():
             raise forms.ValidationError(_("This email is already in use."))
         return email
+
+class UserProfileUpdateForm(forms.ModelForm):
+    phone = forms.CharField(
+        label=_("Phone"),
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    address = forms.CharField(
+        label=_("Address"),
+        required=False,
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 3})
+    )
+
+    class Meta:
+        model = UserProfile
+        fields = ['phone', 'address']

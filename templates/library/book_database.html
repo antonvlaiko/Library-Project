@@ -5,6 +5,16 @@
 
 {% block content %}
 <h2 class="mb-4">{% trans "All books" %}</h2>
+<form method="get" action="{% url 'book_database' %}" class="mb-3">
+  <input
+    type="text"
+    name="q"
+    value="{{ query }}"
+    placeholder="Search by title, author, year, genre"
+    class="form-control"
+  />
+  <button type="submit" class="btn btn-primary mt-2">Search</button>
+</form>
 <table class="table table-striped">
   <thead>
     <tr>

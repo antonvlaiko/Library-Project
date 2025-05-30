@@ -7,85 +7,96 @@
 <div class="container mt-4">
   <h2>{% trans "Profile" %}</h2>
 
-<form method="post" novalidate>
+  <form method="post" novalidate>
     {% csrf_token %}
 
-    {% if form.non_field_errors %}
+    {% if user_form.non_field_errors %}
       <div class="alert alert-danger">
-        {{ form.non_field_errors }}
+        {{ user_form.non_field_errors }}
+      </div>
+    {% endif %}
+    {% if profile_form.non_field_errors %}
+      <div class="alert alert-danger">
+        {{ profile_form.non_field_errors }}
       </div>
     {% endif %}
 
-  <div class="d-flex gap-3 mb-3 align-items-start">
+    <div class="d-flex gap-3 mb-3 align-items-start flex-wrap">
+      <!-- User Form Fields -->
+      <label class="form-label">
+        {% trans "Username" %}
+        {{ user_form.username.errors }}
+        {{ user_form.username }}
+      </label>
 
-    <label class="form-label">
-      {% trans "Username" %}
-      {{ form.username.errors }}
-      {{ form.username }}
-    </label>
+      <label class="form-label">
+        {% trans "Email" %}
+        {{ user_form.email.errors }}
+        {{ user_form.email }}
+      </label>
 
-    <label class="form-label">
-      {% trans "Email" %}
-      {{ form.email.errors }}
-      {{ form.email }}
-    </label>
+      <label class="form-label">
+        {% trans "First name" %}
+        {{ user_form.first_name.errors }}
+        {{ user_form.first_name }}
+      </label>
 
-    <label class="form-label">
-      {% trans "Full name" %}
-      {{ form.name.errors }}
-      {{ form.name }}
-    </label>
+      <label class="form-label">
+        {% trans "Last name" %}
+        {{ user_form.last_name.errors }}
+        {{ user_form.last_name }}
+      </label>
 
-    <label class="form-label">
-      {% trans "Phone" %}
-      {{ form.phone.errors }}
-      {{ form.phone }}
-    </label>
+      <!-- Profile Form Fields -->
+      <label class="form-label">
+        {% trans "Phone" %}
+        {{ profile_form.phone.errors }}
+        {{ profile_form.phone }}
+      </label>
 
-    <label class="form-label">
-      {% trans "Address" %}
-<!--      {{ form.address.errors }}-->
-      {{ form.address }}
-    </label>
-
-  </div>
+      <label class="form-label w-100">
+        {% trans "Address" %}
+        {{ profile_form.address.errors }}
+        {{ profile_form.address }}
+      </label>
+    </div>
 
     <button type="submit" class="btn btn-primary">{% trans "Save changes" %}</button>
   </form>
 
+  <hr>
 
-<hr>
-{% if not request.user.is_staff %}
-  <h3>{% trans "Loans history" %}</h3>
+  {% if not request.user.is_staff %}
+    <h3>{% trans "Loans history" %}</h3>
 
-  {% if loan_history %}
-    <table class="table table-striped mt-3">
-      <thead>
-        <tr>
-          <th>{% trans "Book title" %}</th>
-          <th>{% trans "Loan date" %}</th>
-          <th>{% trans "Return date" %}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for loan in loan_history %}
+    {% if loan_history %}
+      <table class="table table-striped mt-3">
+        <thead>
           <tr>
-            <td>{{ loan.book.title_localized }}</td>
-            <td>{{ loan.borrowed_at|date:"d.m.Y" }}</td>
-            <td>
-              {% if loan.returned_at %}
-                {{ loan.returned_at|date:"d.m.Y" }}
-              {% else %}
-                <span class="text-danger">{% trans "Not returned" %}</span>
-              {% endif %}
-            </td>
+            <th>{% trans "Book title" %}</th>
+            <th>{% trans "Loan date" %}</th>
+            <th>{% trans "Return date" %}</th>
           </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  {% else %}
-    <p>{% trans "There is no loan history." %}</p>
+        </thead>
+        <tbody>
+          {% for loan in loan_history %}
+            <tr>
+              <td>{{ loan.book.title_localized }}</td>
+              <td>{{ loan.borrowed_at|date:"d.m.Y" }}</td>
+              <td>
+                {% if loan.returned_at %}
+                  {{ loan.returned_at|date:"d.m.Y" }}
+                {% else %}
+                  <span class="text-danger">{% trans "Not returned" %}</span>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>{% trans "There is no loan history." %}</p>
+    {% endif %}
   {% endif %}
-{% endif %}
 </div>
 {% endblock %}
