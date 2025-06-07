@@ -580,6 +580,66 @@ msgstr "Повернення прийнято."
 #msgstr ""
 
 
+msgid "Password"
+msgstr "Пароль"
+
+msgid "Sign in"
+msgstr "Увійти"
+
+msgid "Sign up now"
+msgstr "Зареєструйтеся зараз"
+
+msgid "Do not have an account yet? "
+msgstr "Ще не маєте акаунта? "
+
+msgid "Sign in page | CRM Library"
+msgstr "Вхід | CRM Бібліотека"
+
+msgid "Sign up page | CRM Library"
+msgstr "Реєстрація | CRM Бібліотека"
+
+msgid "Create an account"
+msgstr "Створити акаунт"
+
+msgid "Sign up"
+msgstr "Зареєструватися"
+
+msgid "Already have an account?"
+msgstr "Вже маєте акаунт?"
+
+msgid "Sign in now"
+msgstr "Увійти зараз"
+
+msgid "Patronymic"
+msgstr "По-батькові"
+
+msgid "Phone"
+msgstr "Номер телефону"
+
+msgid "Address"
+msgstr "Адреса проживання"
+
+
+msgid "There are no requested to return books."
+msgstr "Немає книг, які очікують повернення."
+
+
+msgid "The loan was rejected."
+msgstr "У наданні позики було відмовлено."
+
+msgid "The return was rejected."
+msgstr "У поверненні книги було відмовлено."
+
+msgid "First name"
+msgstr "Ім'я"
+
+msgid "Last name"
+msgstr "Прізвище"
+
+msgid "Reject"
+msgstr "Відхилити"
+
+
 
 
 

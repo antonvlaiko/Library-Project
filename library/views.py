@@ -11,6 +11,12 @@ from datetime import timedelta
 from .forms import UserUpdateForm, UserProfileUpdateForm
 from django.utils.translation import gettext as _
 from django.utils.translation import get_language
+from django.shortcuts import get_object_or_404, redirect
+from django.utils import timezone
+from .models import Loan
+from django.shortcuts import render, redirect
+from django.utils.translation import gettext_lazy as _
+from .models import UserProfile
 
 def home(request):
     # search_query = request.GET.get('q', '')
@@ -126,15 +132,20 @@ def home(request):
 @login_required
 def dashboard(request):
     my_loans = Loan.objects.filter(user=request.user, is_returned=False, is_accepted=True)
-    pending_loans = Loan.objects.filter(user=request.user, is_requested=True, is_accepted=False)
+    pending_loans = Loan.objects.filter(user=request.user, is_requested=True, is_accepted=False, is_rejected=False)
     pending_returns = Loan.objects.filter(user=request.user, is_requested_to_return=True, is_returned=False)
     my_invoices = Invoice.objects.filter(user=request.user, paid=False)
-
+    now = timezone.now()
+    rejected_loans_messages = []
+    for loan in my_loans:
+        if loan.is_rejected and loan.rejected_at and (now - loan.rejected_at) < timedelta(minutes=10):
+            rejected_loans_messages.append(loan)
     return render(request, 'library/dashboard.html', {
         'my_loans': my_loans,
         'my_invoices': my_invoices,
         'pending_loans': pending_loans,
         'pending_returns': pending_returns,
+        'rejected_loans_messages': rejected_loans_messages,
     })
 
 @login_required
@@ -164,13 +175,11 @@ def request_book(request, pk):
 
     if request.method == 'POST':
         if book.copies_available > 0:
-            # Check if request already exists
             existing = Loan.objects.filter(user=request.user, book=book, is_requested=True, is_accepted=False)
             if existing.exists():
                 messages.warning(request, _('You have already requested this book.'))
                 return redirect('dashboard')
 
-            # Create the request (do NOT reduce book copies yet)
             Loan.objects.create(
                 user=request.user,
                 book=book,
@@ -219,14 +228,17 @@ def admin_dashboard(request):
     all_books = Book.objects.all()
     all_loans = Loan.objects.filter(is_returned=False)
     open_invoices = Invoice.objects.filter(paid=False)
-    loan_requests = Loan.objects.filter(is_requested=True, is_accepted=False)
+    loan_requests = Loan.objects.filter(is_requested=True, is_accepted=False, is_rejected=False)
     return_requests = Loan.objects.filter(is_requested_to_return=True, is_returned=False)
+    recently_rejected_loans = [loan for loan in loan_requests if loan.is_recently_rejected()]
+    show_reject_message = bool(recently_rejected_loans)
     return render(request, 'library/admin_dashboard.html', {
         'all_books': all_books,
         'all_loans': all_loans,
         'open_invoices': open_invoices,
         'loan_requests': loan_requests,
         'return_requests': return_requests,
+        'show_reject_message': show_reject_message,
     })
 
 @login_required
@@ -443,3 +455,17 @@ def profile(request):
         'loan_history': loan_history,
     }
     return render(request, 'library/profile.html', context)
+
+
+@login_required
+@user_passes_test(is_admin)
+def reject_loan(request, loan_id):
+    if request.method == "POST":
+        loan = get_object_or_404(Loan, id=loan_id, is_rejected=False)
+        loan.is_rejected = True
+        loan.rejected_at = timezone.now()
+        loan.save()
+
+        messages.error(request, _("Loan was rejected."))
+
+    return redirect("admin_dashboard")

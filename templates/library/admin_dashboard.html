@@ -66,10 +66,16 @@
                   </h6>
                   <p class="card-text mb-1"><strong>{% trans "Title:" %}</strong> {{ loan_request.book.title_localized }}</p>
                   <p class="card-text mb-1"><strong>{% trans "Requested on:" %}</strong> {{ loan_request.requested_at }}</p>
+                  <div class="d-flex gap-2 mt-3">
                   <form method="post" action="{% url 'accept_loan' loan_request.id %}">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-success">{% trans "Accept" %}</button>
                   </form>
+                  <form method="post" action="{% url 'reject_loan' loan_request.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">{% trans "Reject" %}</button>
+                  </form>
+                    </div>
                 </div>
               </div>
             </div>
@@ -102,6 +108,7 @@
                   {% csrf_token %}
                   <button type="submit" class="btn btn-success">{% trans "Accept" %}</button>
                 </form>
+
               </li>
             {% endfor %}
           </ul>

@@ -35,6 +35,11 @@
       <div class="card mt-4">
           <div class="card-body">
               <h5 class="card-title">{% trans "Pending loans" %}</h5>
+              {% for loan in rejected_loans_messages %}
+              <div class="alert alert-danger" role="alert">
+                Your loan for "{{ loan.book.title_localized }}" was rejected.
+              </div>
+            {% endfor %}
               {% if pending_loans %}
               <ul class="list-group list-group-flush">
                   {% for loan in pending_loans %}
@@ -47,6 +52,11 @@
                   </li>
                   {% endfor %}
               </ul>
+              {% if show_reject_message %}
+                <div class="alert alert-danger" role="alert">
+                    The loan was rejected.
+                </div>
+              {% endif %}
               {% else %}
               <p>{% trans "There are no requested books." %}</p>
               {% endif %}
@@ -66,6 +76,7 @@
                   </li>
                   {% endfor %}
               </ul>
+
               {% else %}
               <p>{% trans "There are no requested to return books." %}</p>
               {% endif %}

@@ -47,12 +47,20 @@
         {{ user_form.last_name }}
       </label>
 
+      <label class="form-label">
+        {% trans "Patronymic" %}
+        {{ profile_form.patronymic.errors }}
+        {{ profile_form.patronymic }}
+      </label>
+
       <!-- Profile Form Fields -->
       <label class="form-label">
         {% trans "Phone" %}
         {{ profile_form.phone.errors }}
         {{ profile_form.phone }}
       </label>
+
+
 
       <label class="form-label w-100">
         {% trans "Address" %}

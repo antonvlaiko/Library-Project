@@ -1,7 +1,6 @@
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
-from django.conf.urls.i18n import i18n_patterns
 from django.urls import path, include
 
 
@@ -14,6 +13,7 @@ urlpatterns = [
     path('book/<int:pk>/rate/', views.rate_book, name='rate_book'),
     path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('accept-loan/<int:loan_id>/', views.accept_loan, name='accept_loan'),
+    path('reject-loan/<int:loan_id>/', views.reject_loan, name='reject_loan'),
     path('request-return/<int:loan_id>/', views.return_book, name='return_book'),
     path('accept-return/<int:loan_id>/', views.accept_return, name='accept_return'),
 
@@ -21,7 +21,7 @@ urlpatterns = [
     path('return-book/<int:loan_id>/', views.return_book, name='return_book'),
     path('pay-invoice/<int:invoice_id>/', views.pay_invoice, name='pay_invoice'),
     path('datenbank/', views.book_database, name='book_database'),
-    path('buch/bearbeiten/<int:book_id>/', views.edit_book, name='edit_book'),
+    path('books/edit_book/<int:book_id>/', views.edit_book, name='edit_book'),
     path('all-loans/', views.all_loans, name='all_loans'),
     path('profile/', views.profile, name='profile'),
 ]

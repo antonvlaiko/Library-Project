@@ -2,6 +2,9 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import get_language
+from django import forms
+from django.utils import timezone
+from datetime import timedelta
 
 class Book(models.Model):
     isbn = models.CharField(_("ISBN"), max_length=50, unique=True)
@@ -50,6 +53,13 @@ class Loan(models.Model):
     requested_at = models.DateTimeField(_("Requested At"), auto_now_add=True)
     returned_at = models.DateTimeField(_("Returned At"), null=True, blank=True)
     is_returned = models.BooleanField(_("Returned"), default=False)
+    is_rejected = models.BooleanField(default=False)
+    rejected_at = models.DateTimeField(null=True, blank=True)
+
+    def is_recently_rejected(self):
+        if self.is_rejected and self.rejected_at:
+            return timezone.now() - self.rejected_at < timedelta(minutes=10)
+        return False
 
     class Meta:
         verbose_name = _("Loan")
@@ -83,9 +93,9 @@ class BookRating(models.Model):
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    phone = models.CharField(max_length=20)
-    address = models.CharField(max_length=255)
-    patronymic = models.CharField(max_length=100, blank=True)
+    phone = models.CharField(max_length=20, blank=True, null=True)
+    address = models.CharField(max_length=255, blank=True, null=True)
+    patronymic = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
         return f"Profile of {self.user.username}"

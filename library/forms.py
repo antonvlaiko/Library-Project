@@ -57,7 +57,12 @@ class UserProfileUpdateForm(forms.ModelForm):
         required=False,
         widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 3})
     )
+    patronymic = forms.CharField(
+        label=_("Patronymic"),
+        required=False,
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
 
     class Meta:
         model = UserProfile
-        fields = ['phone', 'address']
+        fields = ['phone', 'address', 'patronymic']
