@@ -27,8 +27,12 @@
     <input type="text" name="author_uk" value="{{ book.author_uk }}" class="form-control" required>
   </div>
   <div class="mb-3">
-    <label class="form-label">{% trans "Genre" %}</label>
-    <input type="text" name="genre" value="{{ book.genre }}" class="form-control" required>
+    <label class="form-label">{% trans "Genre (English)" %}</label>
+    <input type="text" name="genre_en" value="{{ book.genre_en }}" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">{% trans "Genre (Ukrainian)" %}</label>
+    <input type="text" name="genre_uk" value="{{ book.genre_uk }}" class="form-control" required>
   </div>
   <div class="mb-3">
     <label class="form-label">{% trans "Year of publishing" %}</label>

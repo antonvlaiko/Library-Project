@@ -10,10 +10,10 @@
     type="text"
     name="q"
     value="{{ query }}"
-    placeholder="Search by title, author, year, genre"
+    placeholder="{% trans 'Search by title, author, year, genre' %}"
     class="form-control"
   />
-  <button type="submit" class="btn btn-primary mt-2">Search</button>
+  <button type="submit" class="btn btn-primary mt-2">{% trans "Search" %}</button>
 </form>
 <table class="table table-striped">
   <thead>
@@ -34,7 +34,7 @@
       <td>{{ book.isbn }}</td>
       <td>{{ book.title_localized }}</td>
       <td>{{ book.author_localized }}</td>
-      <td>{{ book.genre }}</td>
+      <td>{{ book.genre_localized }}</td>
       <td>{{ book.published_year }}</td>
       <td>{{ book.copies_available }}</td>
       <td>

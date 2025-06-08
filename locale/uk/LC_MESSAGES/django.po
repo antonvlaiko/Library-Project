@@ -216,11 +216,11 @@ msgstr "Обкладинка книги"
 
 #: .\templates\library\admin_dashboard.html:2
 msgid "Admin Dashboard | CRM Library"
-msgstr "Панель адміністратора | CRM Бібліотека"
+msgstr "Панель управління бібліотекаря | CRM Бібліотека"
 
 #: .\templates\library\admin_dashboard.html:5
 msgid "Admin Dashboard"
-msgstr "Панель адміністратора"
+msgstr "Панель управління бібліотекаря"
 
 #: .\templates\library\admin_dashboard.html:12
 msgid "Database Books"
@@ -316,7 +316,7 @@ msgstr "База даних | Книги"
 
 #: .\templates\library\book_database.html:6 .\templates\library\home.html:145
 msgid "All books"
-msgstr "Всі книги"
+msgstr "Усі книги"
 
 #: .\templates\library\book_database.html:17
 msgid "Actions"
@@ -522,6 +522,12 @@ msgstr "Назва (Українською)"
 msgid "Title (English)"
 msgstr "Назва (Англійською)"
 
+msgid "Genre (English)"
+msgstr "Жанр (Англійською)"
+
+msgid "Genre (Ukrainian)"
+msgstr "Жанр (Українською)"
+
 msgid "Book is already rated"
 msgstr "Книгу вже оцінено"
 
@@ -579,6 +585,8 @@ msgstr "Повернення прийнято."
 #msgid ""
 #msgstr ""
 
+msgid "loans"
+msgstr "позик"
 
 msgid "Password"
 msgstr "Пароль"
@@ -639,7 +647,14 @@ msgstr "Прізвище"
 msgid "Reject"
 msgstr "Відхилити"
 
+msgid "Search by title, author, year, genre"
+msgstr "Пошук за назвою, автором, роком публікації, жанром"
 
+msgid "Search by reader`s last name or username"
+msgstr "Пошук за прізвищем або іменем користувача читача"
+
+msgid "Loan approved successfully."
+msgstr "Позику підтверджено."
 
 
 

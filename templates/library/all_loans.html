@@ -17,10 +17,10 @@
     type="text"
     name="q"
     value="{{ query }}"
-    placeholder="Search by reader's last name"
+    placeholder="{% trans 'Search by reader`s last name or username' %}"
     class="form-control"
   />
-  <button type="submit" class="btn btn-primary mt-2">Search</button>
+  <button type="submit" class="btn btn-primary mt-2">{% trans "Search" %}</button>
 </form>
 
 <table class="table table-striped">
@@ -42,7 +42,7 @@
           <strong>{{ loan.book.title_localized }}</strong><br>
           {% trans "ISBN:" %} {{ loan.book.isbn }}<br>
           {% trans "Author:" %} {{ loan.book.title_localized }}<br>
-          {% trans "Genre:" %} {{ loan.book.genre }}<br>
+          {% trans "Genre:" %} {{ loan.book.genre_localized }}<br>
           {% trans "Year of publishing:" %} {{ loan.book.published_year }}
         </td>
         <td>{{ loan.user.username }}</td>

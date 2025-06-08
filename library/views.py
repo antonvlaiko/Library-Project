@@ -17,6 +17,7 @@ from .models import Loan
 from django.shortcuts import render, redirect
 from django.utils.translation import gettext_lazy as _
 from .models import UserProfile
+from collections import OrderedDict
 
 def home(request):
     # search_query = request.GET.get('q', '')
@@ -43,7 +44,7 @@ def home(request):
     lang_code = get_language() or 'en'
 
     search_query = request.GET.get('q', '').strip()
-    selected_genres = request.GET.getlist('genre')
+    selected_genres = request.GET.getlist('genre_en')
     year_min = request.GET.get('year_min')
     year_max = request.GET.get('year_max')
 
@@ -62,37 +63,52 @@ def home(request):
             Q(title_uk__icontains=search_query) |
             Q(author_en__icontains=search_query) |
             Q(author_uk__icontains=search_query) |
-            Q(genre__icontains=search_query) |
+            Q(genre_en__icontains=search_query) |
+            Q(genre_uk__icontains=search_query) |
             Q(isbn__icontains=search_query) |
             Q(published_year__icontains=search_query)
         )
 
-    # Apply genre filter
-    if selected_genres:
-        books = books.filter(genre__in=selected_genres)
+    genre_field = 'genre_uk' if lang_code == 'uk' else 'genre_en'
+    selected_genres = request.GET.getlist('genre')
 
-    # Get all genres for checkbox list
+    if selected_genres:
+        books = books.filter(
+            Q(genre_en__in=selected_genres) |
+            Q(genre_uk__in=selected_genres)
+        )
+
     genres = (
         Book.objects.filter(visible=True)
-        .exclude(genre__isnull=True)
-        .exclude(genre__exact='')
-        .values_list('genre', flat=True)
+        .exclude(**{f"{genre_field}__isnull": True})
+        .exclude(**{f"{genre_field}__exact": ''})
+        .values_list(genre_field, flat=True)
         .distinct()
-        .order_by('genre')
+        .order_by(genre_field)
     )
 
     # Top categories
-    top_categories = (
+    top_genres = (
         Book.objects.filter(visible=True)
-        .exclude(genre__isnull=True)
-        .exclude(genre__exact='')
-        .values('genre')
+        .exclude(genre_en__isnull=True)
+        .exclude(genre_en__exact='')
+        .values('genre_en')
         .annotate(num_loans=Count('loan'))
         .order_by('-num_loans')[:5]
     )
+    top_categories = []
+
+    for entry in top_genres:
+        genre_en = entry['genre_en']
+        # Get any book with this genre_en to use genre_localized
+        book = Book.objects.filter(genre_en=genre_en, visible=True).first()
+        if book:
+            top_categories.append({
+                'genre_localized': book.genre_localized,
+                'num_loans': entry['num_loans'],
+            })
     if not request.user.is_authenticated:
-        # Show some default content or empty recommendations for anonymous users
-        similar_books = []  # or maybe popular books, etc.
+        similar_books = []
     else:
         # Get returned loans for logged-in user
         returned_loans = Loan.objects.filter(user=request.user, is_returned=True).select_related('book')
@@ -104,11 +120,11 @@ def home(request):
         for loan in returned_loans:
             book = loan.book
             similar_authors.add(book.author_en)
-            similar_genres.add(book.genre)
+            similar_genres.add(book.genre_en)
             books_read_ids.add(book.id)
 
         similar_books = Book.objects.filter(
-            Q(author_en__in=similar_authors) | Q(genre__in=similar_genres)
+            Q(author_en__in=similar_authors) | Q(genre_en__in=similar_genres)
         ).exclude(id__in=books_read_ids).distinct()[:8]
     # Show newest only if no filter is applied
     show_newest = not search_query and not selected_genres
@@ -121,6 +137,7 @@ def home(request):
         'search_query': search_query,
         'year_min': year_min,
         'genres': genres,
+        'genre_field': genre_field,
         'selected_genres': selected_genres,
         'show_newest': show_newest,
         'similar_books': similar_books,
@@ -249,6 +266,7 @@ def accept_loan(request, loan_id):
 
         if loan.book.copies_available > 0:
             loan.is_accepted = True
+            loan.borrowed_at = timezone.now()
             loan.due_date = timezone.now() + timedelta(days=14)
             loan.save()
             loan.book.copies_available -= 1
@@ -294,14 +312,15 @@ def add_book(request):
         title_en = request.POST['title_en']
         author_uk = request.POST['author_uk']
         author_en = request.POST['author_en']
-        genre = request.POST['genre']
+        genre_uk = request.POST['genre_uk']
+        genre_en = request.POST['genre_en']
         published_year = request.POST['published_year']
         copies_available = request.POST['copies_available']
         # Коректне перетворення чекбокса у булеве значення:
         visible = request.POST.get('visible') == 'on'
         image = request.FILES.get('image')
         Book.objects.create(
-            isbn=isbn, title_en=title_en, title_uk=title_uk, author_en=author_en, author_uk=author_uk, genre=genre,
+            isbn=isbn, title_en=title_en, title_uk=title_uk, author_en=author_en, author_uk=author_uk, genre_en=genre_en, genre_uk=genre_uk,
             published_year=published_year, copies_available=copies_available,
             visible=visible, image=image
         )
@@ -342,7 +361,8 @@ def book_database(request):
             Q(title_uk__icontains=query) |
             Q(author_en__icontains=query) |
             Q(author_uk__icontains=query) |
-            Q(genre__icontains=query) |
+            Q(genre_en__icontains=query) |
+            Q(genre_uk__icontains=query) |
             Q(isbn__icontains=query) |
             Q(published_year__icontains=query)
         )
@@ -358,7 +378,8 @@ def edit_book(request, book_id):
         book.title_en = request.POST.get('title_en', book.title_en)
         book.author_uk = request.POST.get('author_uk', book.author_uk)
         book.author_en = request.POST.get('author_en', book.author_en)
-        book.genre = request.POST.get('genre', book.genre)
+        book.genre_uk = request.POST.get('genre_uk', book.genre_uk)
+        book.genre_en = request.POST.get('genre_en', book.genre_en)
         book.isbn = request.POST.get('isbn', book.isbn)
         book.published_year = request.POST.get('published_year', book.published_year)
         book.copies_available = int(request.POST.get('copies_available', book.copies_available))
@@ -373,51 +394,53 @@ def edit_book(request, book_id):
 @user_passes_test(is_admin)
 def all_loans(request):
     # Всі позики, відсортовані за статусом повернення, останні спочатку
-    loans = Loan.objects.select_related('book', 'user').order_by('-borrowed_at')
     today = timezone.now().date()
-    query = request.GET.get('q', '')  # get search query from ?q=
+    query = request.GET.get('q', '').strip()
+
+    # Load loans
+    loans = Loan.objects.select_related('book', 'user').order_by('-borrowed_at')
+
+    # Filter by search query
     if query:
         loans = loans.filter(
-            Q(user__last_name__icontains=query)
+            Q(user__last_name__icontains=query) |
+            Q(user__username__icontains=query)
         )
 
-    # Обчислення додаткових полів (must come before export)
+    # Compute extra fields (overdue, fee)
     for loan in loans:
-        loan.due_date_date = loan.due_date.date()
-        if not loan.is_returned and today > loan.due_date_date:
+        loan.due_date_date = loan.due_date.date() if loan.due_date else None
+        if not loan.is_returned and loan.due_date_date and today > loan.due_date_date:
             loan.days_overdue = (today - loan.due_date_date).days
             loan.fee = round(loan.days_overdue * 1.5, 2)
         else:
             loan.days_overdue = 0
             loan.fee = 0
 
-    # Excel export
+    # Handle Excel export
     if request.GET.get('export') == 'excel':
-        import openpyxl
-        from django.http import HttpResponse
-
         wb = openpyxl.Workbook()
         ws = wb.active
         ws.title = "Loans"
 
         headers = [
-            _("Book"), _("ISBN"), _("Author (English)"), _("Genre"), _("Year of publishing"),
-            _("User"), _("Lent"), _("Until"), _("Returned"),
-            _("Late by (days)"), _("Fee (€)")
+            str(_("Book")), str(_("ISBN")), str(_("Author (English)")), str(_("Genre (English)")), str(_("Year of publishing")),
+            str(_("User")), str(_("Lent")), str(_("Until")), str(_("Returned")),
+            str(_("Late by (days)")), str(_("Fee (€)"))
         ]
         ws.append(headers)
 
         for loan in loans:
             row = [
-                loan.book.title_en,
+                loan.book.title_localized if hasattr(loan.book, 'title_localized') else loan.book.title_en,
                 loan.book.isbn,
                 loan.book.author_en,
-                loan.book.genre,
+                loan.book.genre_en,
                 loan.book.published_year,
                 loan.user.username,
                 loan.borrowed_at.strftime("%d.%m.%Y %H:%M") if loan.borrowed_at else '',
                 loan.due_date.strftime("%d.%m.%Y %H:%M") if loan.due_date else '',
-                loan.returned_at.strftime("%d.%m.%Y %H:%M") if loan.is_returned and loan.returned_at else 'Ні',
+                loan.returned_at.strftime("%d.%m.%Y %H:%M") if loan.is_returned and loan.returned_at else str(_('No')),
                 loan.days_overdue,
                 f"{loan.fee:.2f} €"
             ]
@@ -431,7 +454,10 @@ def all_loans(request):
         return response
 
     # Normal render
-    return render(request, 'library/all_loans.html', {'loans': loans, 'query': query})
+    return render(request, 'library/all_loans.html', {
+        'loans': loans,
+        'query': query,
+    })
 
 
 @login_required

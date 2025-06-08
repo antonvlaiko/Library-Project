@@ -43,7 +43,7 @@
               {% if genre in selected_genres %}checked{% endif %}
             >
             <label class="form-check-label" for="genre-{{ genre|slugify }}">
-              {{ genre|title }}
+              {{ genre }}
             </label>
           </div>
         {% endfor %}
@@ -90,21 +90,25 @@
 <h4 class="mb-3">{% trans "Top genres" %}</h4>
 <div class="row mb-4">
   {% for cat in top_categories %}
-    <div class="col-md-2 col-6 mb-3">
-      <div class="card shadow-sm text-center h-100">
-        <div class="card-body p-3">
-          <h6 class="card-title mb-2 fw-bold">{{ cat.genre }}</h6>
-          <span class="badge bg-info text-dark fs-6">{{ cat.num_loans }} {% trans " loans" %}</span>
-        </div>
+  <div class="col-md-2 col-6 mb-3">
+    <div class="card shadow-sm text-center h-100">
+      <div class="card-body p-3">
+        <h6 class="card-title mb-2 fw-bold">{{ cat.genre_localized }}</h6>
+        <span class="badge bg-info text-dark fs-6">
+          {{ cat.num_loans }} {% trans "loans" %}
+        </span>
       </div>
     </div>
-  {% empty %}
-    <div class="col-12">
-      <div class="alert alert-info text-center">
-        {% trans "No genres available" %}
-      </div>
+  </div>
+{% empty %}
+  <div class="col-12">
+    <div class="alert alert-info text-center">
+      {% trans "No genres available" %}
     </div>
-  {% endfor %}
+  </div>
+{% endfor %}
+
+
 </div>
 
 {% if not search_query and not selected_genres and not year_min %}

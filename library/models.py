@@ -12,7 +12,8 @@ class Book(models.Model):
     title_en = models.CharField(_("Title (English)"), max_length=200, blank=True, null=True)
     author_uk = models.CharField(_("Author (Ukrainian)"), max_length=100, blank=True, null=True)
     author_en = models.CharField(_("Author (English)"), max_length=100, blank=True, null=True)
-    genre = models.CharField(_("Genre"), max_length=100)
+    genre_uk = models.CharField(_("Genre (Ukrainian"), max_length=100, blank=True, null=True)
+    genre_en = models.CharField(_("Genre (English"), max_length=100, blank=True, null=True)
     published_year = models.PositiveIntegerField(_("Published Year"))
     copies_available = models.PositiveIntegerField(_("Copies Available"))
     visible = models.BooleanField(_("Visible"), default=True)
@@ -25,6 +26,13 @@ class Book(models.Model):
         if lang == 'en' and self.title_en:
             return self.title_en
         return self.title_uk
+
+    @property
+    def genre_localized(self):
+        lang = get_language()
+        if lang == 'en' and self.genre_en:
+            return self.genre_en
+        return self.genre_uk
 
     @property
     def author_localized(self):
@@ -45,8 +53,8 @@ class Book(models.Model):
 class Loan(models.Model):
     user = models.ForeignKey(User, verbose_name=_("User"), on_delete=models.CASCADE)
     book = models.ForeignKey(Book, verbose_name=_("Book"), on_delete=models.CASCADE)
-    borrowed_at = models.DateTimeField(_("Borrowed At"), auto_now_add=True)
-    due_date = models.DateTimeField(_("Due Date"), auto_now_add=True)
+    borrowed_at = models.DateTimeField(_("Borrowed At"))
+    due_date = models.DateTimeField(_("Due Date"))
     is_requested = models.BooleanField(default=False)
     is_accepted = models.BooleanField(default=False)
     is_requested_to_return = models.BooleanField(default=False)
